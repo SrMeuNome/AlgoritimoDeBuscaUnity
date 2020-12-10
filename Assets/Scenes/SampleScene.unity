@@ -395,6 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1637cb07568665d4098914fe68d83061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buscar: {x: 10, y: 0}
 --- !u!4 &614397356
 Transform:
   m_ObjectHideFlags: 0

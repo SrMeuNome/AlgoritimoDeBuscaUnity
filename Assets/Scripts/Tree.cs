@@ -19,7 +19,7 @@ public class Tree
         Node auxNodeY = branchNode;
 
         //Adicionando nos para direita
-        for (int i = positionBranch.x; i < endPositionMap.x; i++)
+        for (int i = positionBranch.x; i <= endPositionMap.x; i++)
         {
             //Adicionando nos para cima
             for(int j = positionBranch.y; j < startPositionMap.y; j++)
@@ -41,18 +41,21 @@ public class Tree
                 auxNodeY = auxNodeY.bottomChild;
             }
 
-            auxNodeX.rightChild = new Node();
-            auxNodeX.rightChild.value = new Vector2Int(auxNodeX.value.x + 1, auxNodeX.value.y);
-            auxNodeX.rightChild.leftChild = auxNodeX;
-            auxNodeX = auxNodeX.rightChild;
-            auxNodeY = auxNodeX;
+            if (i != endPositionMap.x)
+            {
+                auxNodeX.rightChild = new Node();
+                auxNodeX.rightChild.value = new Vector2Int(auxNodeX.value.x + 1, auxNodeX.value.y);
+                auxNodeX.rightChild.leftChild = auxNodeX;
+                auxNodeX = auxNodeX.rightChild;
+                auxNodeY = auxNodeX;
+            }
         }
 
         auxNodeX = branchNode;
         auxNodeY = branchNode;
 
         //Adicionando nos para esquerda
-        for (int i = positionBranch.x; i > startPositionMap.x; i--)
+        for (int i = positionBranch.x; i >= startPositionMap.x; i--)
         {
             //Adicionando nos para cima
             for (int j = positionBranch.y; j < startPositionMap.y; j++)
@@ -74,62 +77,76 @@ public class Tree
                 auxNodeY = auxNodeY.bottomChild;
             }
 
-            auxNodeX.leftChild = new Node();
-            auxNodeX.leftChild.value = new Vector2Int(auxNodeX.value.x - 1, auxNodeX.value.y);
-            auxNodeX.leftChild.rightChild = auxNodeX;
-            auxNodeX = auxNodeX.leftChild;
-            auxNodeY = auxNodeX;
+            if(i != startPositionMap.x)
+            {
+                auxNodeX.leftChild = new Node();
+                auxNodeX.leftChild.value = new Vector2Int(auxNodeX.value.x - 1, auxNodeX.value.y);
+                auxNodeX.leftChild.rightChild = auxNodeX;
+                auxNodeX = auxNodeX.leftChild;
+                auxNodeY = auxNodeX;
+            }
         }
     }
 
     public void printTree()
     {
-        Node auxNode = this.branchNode;
+        List<Node> listNodes = new List<Node>();
+        int i = 0;
+        listNodes.Add(branchNode);
+
         
-        //printando esquerda
-        while(auxNode != null)
+        while (true)
         {
-            if(auxNode != null)
+            if(listNodes[i] != null)
             {
-                MonoBehaviour.print("Esquerda: " + auxNode.value);
+                 MonoBehaviour.print("pai:" + listNodes[i].value);
             }
-            auxNode = auxNode.leftChild;
+
+            if (listNodes[i].upChild != null)
+            {
+                if (!listNodes[i].upChild.accessed)
+                {
+                    MonoBehaviour.print("Cima:" + listNodes[i].upChild.value);
+                    listNodes.Add(listNodes[i].upChild);
+                }
+            }
+            if (listNodes[i].bottomChild != null)
+            {
+                if (!listNodes[i].bottomChild.accessed)
+                {
+                    MonoBehaviour.print("Baixo:" + listNodes[i].bottomChild.value);
+                    listNodes.Add(listNodes[i].bottomChild);
+                }
+            }
+            if (listNodes[i].leftChild != null)
+            {
+                if (!listNodes[i].leftChild.accessed)
+                {
+                    MonoBehaviour.print("Esquerda:" + listNodes[i].leftChild.value);
+                    listNodes.Add(listNodes[i].leftChild);
+                }
+            }
+            if (listNodes[i].rightChild != null)
+            {
+                if (!listNodes[i].rightChild.accessed)
+                {
+                    MonoBehaviour.print("Direita:" + listNodes[i].rightChild.value);
+                    listNodes.Add(listNodes[i].rightChild);
+                }
+            }
+            listNodes[i].accessed = true;
+            i++;
+
+            //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+            if (i >= listNodes.Count)
+            {
+                break;
+            }
         }
 
-        auxNode = this.branchNode;
-
-        //printando direita
-        while(auxNode != null)
+        foreach (Node node in listNodes)
         {
-            if(auxNode != null)
-            {
-                MonoBehaviour.print("Direita: " + auxNode.value);
-            }
-            auxNode = auxNode.rightChild;
-        }
-
-        auxNode = this.branchNode;
-
-        //printando cima
-        while (auxNode != null)
-        {
-            if (auxNode != null)
-            {
-                MonoBehaviour.print("Cima: " + auxNode.value);
-            }
-            auxNode = auxNode.upChild;
-        }
-
-        auxNode = this.branchNode;
-
-        //printando baixo
-        while (auxNode != null)
-        {
-            if (auxNode != null)
-            {
-                MonoBehaviour.print("Baixo: " + auxNode.value);
-            }
-            auxNode = auxNode.bottomChild;
+            node.accessed = false;
         }
     }
 
@@ -183,5 +200,100 @@ public class Tree
         }
 
         return listaDeNos;
+    }
+
+    public object widthSearch(Vector2Int value)
+    {
+        Node nodeFind = null;
+        List<Node> listNodes = new List<Node>();
+        bool find = false;
+        int i = 0;
+        listNodes.Add(branchNode);
+
+        //Buscar na raiz
+        if (listNodes[i].value.Equals(value))
+        {
+            nodeFind = listNodes[i];
+            find = true;
+        }
+
+        while (!find)
+        {
+            if(listNodes[i].upChild != null && !find)
+            {
+                if(!listNodes[i].upChild.accessed)
+                {
+                    if (listNodes[i].upChild.value.Equals(value))
+                    {
+                        nodeFind = listNodes[i].upChild;
+                        find = true;
+                    }
+                    else
+                    {
+                        listNodes.Add(listNodes[i].upChild);
+                    }
+                }
+            }
+            if (listNodes[i].bottomChild != null && !find)
+            {
+                if (!listNodes[i].bottomChild.accessed)
+                {
+                    if (listNodes[i].bottomChild.value.Equals(value))
+                    {
+                        nodeFind = listNodes[i].bottomChild;
+                        find = true;
+                    }
+                    else
+                    {
+                        listNodes.Add(listNodes[i].bottomChild);
+                    }
+                }
+            }
+            if (listNodes[i].leftChild != null && !find)
+            {
+                if (!listNodes[i].leftChild.accessed)
+                {
+                    if (listNodes[i].leftChild.value.Equals(value))
+                    {
+                        nodeFind = listNodes[i].leftChild;
+                        find = true;
+                    }
+                    else
+                    {
+                        listNodes.Add(listNodes[i].leftChild);
+                    }
+                }
+            }
+            if (listNodes[i].rightChild != null && !find)
+            {
+                if (!listNodes[i].rightChild.accessed)
+                {
+                    if (listNodes[i].rightChild.value.Equals(value))
+                    {
+                        nodeFind = listNodes[i].rightChild;
+                        find = true;
+                    }
+                    else
+                    {
+                        listNodes.Add(listNodes[i].rightChild);
+                    }
+                }
+            }
+            listNodes[i].accessed = true;
+            i++;
+
+            //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+            if(i >= listNodes.Count)
+            {
+                break;
+            }
+        }
+
+        foreach (Node node in listNodes)
+        {
+            node.accessed = false;
+        }
+
+        return nodeFind;
     }
 }
