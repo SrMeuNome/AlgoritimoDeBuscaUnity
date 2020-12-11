@@ -16,7 +16,7 @@ public class Test : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Aspirador");
-        tree = new Tree(new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(3, 3));
+        tree = new Tree(new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(2, -2));
         tree.printTree();
         listaDeNos = tree.retornarCaminho();
         i = 0;
@@ -34,7 +34,7 @@ public class Test : MonoBehaviour
         //}
         /*else*/ if (time <= 0)
         {
-            find = (Node)tree.widthSearch(buscar);
+            find = (Node) tree.widthSearch(buscar);
             //print(find.value);
             player.transform.position = new Vector3(find.value.x + 0.5f, find.value.y - 0.5f, 0);
             time = 0.5f;

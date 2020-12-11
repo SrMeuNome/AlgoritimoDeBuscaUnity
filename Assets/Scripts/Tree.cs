@@ -18,6 +18,7 @@ public class Tree
         Node auxNodeX = branchNode;
         Node auxNodeY = branchNode;
 
+        //Fazendo ligações completas Cima-baixo
         //Adicionando nos para direita
         for (int i = positionBranch.x; i <= endPositionMap.x; i++)
         {
@@ -86,6 +87,75 @@ public class Tree
                 auxNodeY = auxNodeX;
             }
         }
+
+        if(branchNode.upChild != null)
+        {
+            auxNodeX = branchNode.upChild;
+            auxNodeY = branchNode.upChild;
+        }
+
+        //Fazendo ligações completas Esquerda-Direita
+        //Adicionando nos para cima
+        for (int j = positionBranch.y; j < startPositionMap.y; j++)
+        {
+            //Adicionando nos para direita
+            for (int i = positionBranch.x; i < endPositionMap.x; i++)
+            {
+                auxNodeX.rightChild = auxNodeX.bottomChild.rightChild.bottomChild;
+                auxNodeX.rightChild.leftChild = auxNodeX;
+                auxNodeX = auxNodeX.rightChild;
+            }
+
+            auxNodeX = auxNodeY;
+
+            //Adicionando nos para esquerda
+            for (int i = positionBranch.x; i > startPositionMap.x; i--)
+            {
+                auxNodeX.leftChild = auxNodeX.bottomChild.leftChild.bottomChild;
+                auxNodeX.leftChild.rightChild = auxNodeY;
+                auxNodeY = auxNodeY.leftChild;
+            }
+
+            if (j != endPositionMap.y -1)
+            {
+                auxNodeY = auxNodeY.upChild;
+                auxNodeX = auxNodeY;
+            }
+        }
+
+        if (branchNode.bottomChild != null)
+        {
+            auxNodeX = branchNode.bottomChild;
+            auxNodeY = branchNode.bottomChild;
+        }
+
+        //Adicionando nos para baixo
+        for (int j = positionBranch.y; j > endPositionMap.y; j--)
+        {
+            //Adicionando nos para direita
+            for (int i = positionBranch.x; i < endPositionMap.x; i++)
+            {
+                auxNodeX.rightChild = auxNodeX.upChild.rightChild.bottomChild;
+                auxNodeX.rightChild.leftChild = auxNodeX;
+                auxNodeX = auxNodeX.rightChild;
+            }
+
+            auxNodeX = auxNodeY;
+
+            //Adicionando nos para esquerda
+            for (int i = positionBranch.x; i > startPositionMap.x; i--)
+            {
+                auxNodeX.leftChild = auxNodeX.upChild.leftChild.bottomChild;
+                auxNodeX.leftChild.rightChild = auxNodeY;
+                auxNodeY = auxNodeY.leftChild;
+            }
+
+            if (j != endPositionMap.y -1)
+            {
+                auxNodeY = auxNodeY.bottomChild;
+                auxNodeX = auxNodeY;
+            }
+        }
     }
 
     public void printTree()
@@ -99,7 +169,7 @@ public class Tree
         {
             if(listNodes[i] != null)
             {
-                 MonoBehaviour.print("pai:" + listNodes[i].value);
+                MonoBehaviour.print("pai:" + listNodes[i].value);
             }
 
             if (listNodes[i].upChild != null)
@@ -107,7 +177,10 @@ public class Tree
                 if (!listNodes[i].upChild.accessed)
                 {
                     MonoBehaviour.print("Cima:" + listNodes[i].upChild.value);
-                    listNodes.Add(listNodes[i].upChild);
+                    if (!listNodes.Contains(listNodes[i].upChild))
+                    {
+                        listNodes.Add(listNodes[i].upChild);
+                    }
                 }
             }
             if (listNodes[i].bottomChild != null)
@@ -115,7 +188,10 @@ public class Tree
                 if (!listNodes[i].bottomChild.accessed)
                 {
                     MonoBehaviour.print("Baixo:" + listNodes[i].bottomChild.value);
-                    listNodes.Add(listNodes[i].bottomChild);
+                    if (!listNodes.Contains(listNodes[i].bottomChild))
+                    {
+                        listNodes.Add(listNodes[i].bottomChild);
+                    }
                 }
             }
             if (listNodes[i].leftChild != null)
@@ -123,7 +199,10 @@ public class Tree
                 if (!listNodes[i].leftChild.accessed)
                 {
                     MonoBehaviour.print("Esquerda:" + listNodes[i].leftChild.value);
-                    listNodes.Add(listNodes[i].leftChild);
+                    if (!listNodes.Contains(listNodes[i].leftChild))
+                    {
+                        listNodes.Add(listNodes[i].leftChild);
+                    }
                 }
             }
             if (listNodes[i].rightChild != null)
@@ -131,7 +210,10 @@ public class Tree
                 if (!listNodes[i].rightChild.accessed)
                 {
                     MonoBehaviour.print("Direita:" + listNodes[i].rightChild.value);
-                    listNodes.Add(listNodes[i].rightChild);
+                    if (!listNodes.Contains(listNodes[i].rightChild))
+                    {
+                        listNodes.Add(listNodes[i].rightChild);
+                    }
                 }
             }
             listNodes[i].accessed = true;
@@ -228,7 +310,7 @@ public class Tree
                         nodeFind = listNodes[i].upChild;
                         find = true;
                     }
-                    else
+                    else if (!listNodes.Contains(listNodes[i].upChild))
                     {
                         listNodes.Add(listNodes[i].upChild);
                     }
@@ -243,7 +325,7 @@ public class Tree
                         nodeFind = listNodes[i].bottomChild;
                         find = true;
                     }
-                    else
+                    else if (!listNodes.Contains(listNodes[i].bottomChild))
                     {
                         listNodes.Add(listNodes[i].bottomChild);
                     }
@@ -258,7 +340,7 @@ public class Tree
                         nodeFind = listNodes[i].leftChild;
                         find = true;
                     }
-                    else
+                    else if (!listNodes.Contains(listNodes[i].leftChild))
                     {
                         listNodes.Add(listNodes[i].leftChild);
                     }
@@ -273,7 +355,7 @@ public class Tree
                         nodeFind = listNodes[i].rightChild;
                         find = true;
                     }
-                    else
+                    else if (!listNodes.Contains(listNodes[i].rightChild))
                     {
                         listNodes.Add(listNodes[i].rightChild);
                     }
