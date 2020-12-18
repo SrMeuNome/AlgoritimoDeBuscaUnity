@@ -7,6 +7,18 @@ public class Tree
     public Node branchNode { get; }
     private Vector2Int startPositionMap;
     private Vector2Int endPositionMap;
+    public enum TypeSearch
+    {
+        width,
+        depth
+    }
+
+    public enum ObjSearch
+    {
+        player,
+        blocked,
+        trash
+    }
 
     public Tree(Vector2Int positionBranch, Vector2Int startPositionMap, Vector2Int endPositionMap)
     {
@@ -23,7 +35,7 @@ public class Tree
         for (int i = positionBranch.x; i <= endPositionMap.x; i++)
         {
             //Adicionando nos para cima
-            for(int j = positionBranch.y; j < startPositionMap.y; j++)
+            for (int j = positionBranch.y; j < startPositionMap.y; j++)
             {
                 auxNodeY.upChild = new Node();
                 auxNodeY.upChild.value = new Vector2Int(auxNodeY.value.x, auxNodeY.value.y + 1);
@@ -78,7 +90,7 @@ public class Tree
                 auxNodeY = auxNodeY.bottomChild;
             }
 
-            if(i != startPositionMap.x)
+            if (i != startPositionMap.x)
             {
                 auxNodeX.leftChild = new Node();
                 auxNodeX.leftChild.value = new Vector2Int(auxNodeX.value.x - 1, auxNodeX.value.y);
@@ -88,7 +100,7 @@ public class Tree
             }
         }
 
-        if(branchNode.upChild != null)
+        if (branchNode.upChild != null)
         {
             auxNodeX = branchNode.upChild;
             auxNodeY = branchNode.upChild;
@@ -116,7 +128,7 @@ public class Tree
                 auxNodeY = auxNodeY.leftChild;
             }
 
-            if (j != endPositionMap.y -1)
+            if (j != endPositionMap.y - 1)
             {
                 auxNodeY = auxNodeY.upChild;
                 auxNodeX = auxNodeY;
@@ -150,7 +162,7 @@ public class Tree
                 auxNodeY = auxNodeY.leftChild;
             }
 
-            if (j != endPositionMap.y -1)
+            if (j != endPositionMap.y - 1)
             {
                 auxNodeY = auxNodeY.bottomChild;
                 auxNodeX = auxNodeY;
@@ -164,10 +176,10 @@ public class Tree
         int i = 0;
         listNodes.Add(branchNode);
 
-        
+
         while (true)
         {
-            if(listNodes[i] != null)
+            if (listNodes[i] != null)
             {
                 MonoBehaviour.print("pai:" + listNodes[i].value);
             }
@@ -284,98 +296,302 @@ public class Tree
         return listaDeNos;
     }
 
-    public object widthSearch(Vector2Int value)
+    public List<Node> Search(ObjSearch objSearch, TypeSearch typeSearch)
     {
-        Node nodeFind = null;
+        List<Node> nodeFindList = new List<Node>();
         List<Node> listNodes = new List<Node>();
-        bool find = false;
         int i = 0;
+
         listNodes.Add(branchNode);
 
-        //Buscar na raiz
-        if (listNodes[i].value.Equals(value))
+        if (typeSearch == TypeSearch.width)
         {
-            nodeFind = listNodes[i];
-            find = true;
-        }
+            if (objSearch == ObjSearch.player)
+            {
+                //Buscar na raiz
+                if (listNodes[i].player)
+                {
+                    nodeFindList.Add(listNodes[i]);
+                }
 
-        while (!find)
+                while (true)
+                {
+                    if (listNodes[i].upChild != null)
+                    {
+                        if (!listNodes[i].upChild.accessed)
+                        {
+                            if (listNodes[i].upChild.player)
+                            {
+                                nodeFindList.Add(listNodes[i].upChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].upChild))
+                            {
+                                listNodes.Add(listNodes[i].upChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].bottomChild != null)
+                    {
+                        if (!listNodes[i].bottomChild.accessed)
+                        {
+                            if (listNodes[i].bottomChild.player)
+                            {
+                                nodeFindList.Add(listNodes[i].bottomChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].bottomChild))
+                            {
+                                listNodes.Add(listNodes[i].bottomChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].leftChild != null)
+                    {
+                        if (!listNodes[i].leftChild.accessed)
+                        {
+                            if (listNodes[i].leftChild.player)
+                            {
+                                nodeFindList.Add(listNodes[i].leftChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].leftChild))
+                            {
+                                listNodes.Add(listNodes[i].leftChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].rightChild != null)
+                    {
+                        if (!listNodes[i].rightChild.accessed)
+                        {
+                            if (listNodes[i].rightChild.player)
+                            {
+                                nodeFindList.Add(listNodes[i].rightChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].rightChild))
+                            {
+                                listNodes.Add(listNodes[i].rightChild);
+                            }
+                        }
+                    }
+                    listNodes[i].accessed = true;
+                    i++;
+
+                    //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                    if (i >= listNodes.Count)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (objSearch == ObjSearch.trash)
+            {
+                //Buscar na raiz
+                if (listNodes[i].trash)
+                {
+                    nodeFindList.Add(listNodes[i]);
+                }
+
+                while (true)
+                {
+                    if (listNodes[i].upChild != null)
+                    {
+                        if (!listNodes[i].upChild.accessed)
+                        {
+                            if (listNodes[i].upChild.trash)
+                            {
+                                nodeFindList.Add(listNodes[i].upChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].upChild))
+                            {
+                                listNodes.Add(listNodes[i].upChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].bottomChild != null)
+                    {
+                        if (!listNodes[i].bottomChild.accessed)
+                        {
+                            if (listNodes[i].bottomChild.trash)
+                            {
+                                nodeFindList.Add(listNodes[i].bottomChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].bottomChild))
+                            {
+                                listNodes.Add(listNodes[i].bottomChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].leftChild != null)
+                    {
+                        if (!listNodes[i].leftChild.accessed)
+                        {
+                            if (listNodes[i].leftChild.trash)
+                            {
+                                nodeFindList.Add(listNodes[i].leftChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].leftChild))
+                            {
+                                listNodes.Add(listNodes[i].leftChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].rightChild != null)
+                    {
+                        if (!listNodes[i].rightChild.accessed)
+                        {
+                            if (listNodes[i].rightChild.trash)
+                            {
+                                nodeFindList.Add(listNodes[i].rightChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].rightChild))
+                            {
+                                listNodes.Add(listNodes[i].rightChild);
+                            }
+                        }
+                    }
+                    listNodes[i].accessed = true;
+                    i++;
+
+                    //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                    if (i >= listNodes.Count)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (objSearch == ObjSearch.blocked)
+            {
+                //Buscar na raiz
+                if (listNodes[i].blocked)
+                {
+                    nodeFindList.Add(listNodes[i]);
+                }
+
+                while (true)
+                {
+                    if (listNodes[i].upChild != null)
+                    {
+                        if (!listNodes[i].upChild.blocked)
+                        {
+                            if (listNodes[i].upChild.blocked)
+                            {
+                                nodeFindList.Add(listNodes[i].upChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].upChild))
+                            {
+                                listNodes.Add(listNodes[i].upChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].bottomChild != null)
+                    {
+                        if (!listNodes[i].bottomChild.accessed)
+                        {
+                            if (listNodes[i].bottomChild.blocked)
+                            {
+                                nodeFindList.Add(listNodes[i].bottomChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].bottomChild))
+                            {
+                                listNodes.Add(listNodes[i].bottomChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].leftChild != null)
+                    {
+                        if (!listNodes[i].leftChild.accessed)
+                        {
+                            if (listNodes[i].leftChild.blocked)
+                            {
+                                nodeFindList.Add(listNodes[i].leftChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].leftChild))
+                            {
+                                listNodes.Add(listNodes[i].leftChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].rightChild != null)
+                    {
+                        if (!listNodes[i].rightChild.accessed)
+                        {
+                            if (listNodes[i].rightChild.blocked)
+                            {
+                                nodeFindList.Add(listNodes[i].rightChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].rightChild))
+                            {
+                                listNodes.Add(listNodes[i].rightChild);
+                            }
+                        }
+                    }
+                    listNodes[i].accessed = true;
+                    i++;
+
+                    //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                    if (i >= listNodes.Count)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            foreach (Node node in listNodes)
+            {
+                node.accessed = false;
+            }
+
+            return nodeFindList;
+        }
+        else if (typeSearch == TypeSearch.depth)
         {
-            if(listNodes[i].upChild != null && !find)
+            Node nodeAux = this.branchNode;
+            bool end = false;
+            if (objSearch == ObjSearch.player)
             {
-                if(!listNodes[i].upChild.accessed)
+                while (!end)
                 {
-                    if (listNodes[i].upChild.value.Equals(value))
+                    if (nodeAux.player && !nodeAux.accessed)
                     {
-                        nodeFind = listNodes[i].upChild;
-                        find = true;
+                        nodeFindList.Add(nodeAux);
+                        nodeAux.accessed = true;
                     }
-                    else if (!listNodes.Contains(listNodes[i].upChild))
-                    {
-                        listNodes.Add(listNodes[i].upChild);
-                    }
-                }
-            }
-            if (listNodes[i].bottomChild != null && !find)
-            {
-                if (!listNodes[i].bottomChild.accessed)
-                {
-                    if (listNodes[i].bottomChild.value.Equals(value))
-                    {
-                        nodeFind = listNodes[i].bottomChild;
-                        find = true;
-                    }
-                    else if (!listNodes.Contains(listNodes[i].bottomChild))
-                    {
-                        listNodes.Add(listNodes[i].bottomChild);
-                    }
-                }
-            }
-            if (listNodes[i].leftChild != null && !find)
-            {
-                if (!listNodes[i].leftChild.accessed)
-                {
-                    if (listNodes[i].leftChild.value.Equals(value))
-                    {
-                        nodeFind = listNodes[i].leftChild;
-                        find = true;
-                    }
-                    else if (!listNodes.Contains(listNodes[i].leftChild))
-                    {
-                        listNodes.Add(listNodes[i].leftChild);
-                    }
-                }
-            }
-            if (listNodes[i].rightChild != null && !find)
-            {
-                if (!listNodes[i].rightChild.accessed)
-                {
-                    if (listNodes[i].rightChild.value.Equals(value))
-                    {
-                        nodeFind = listNodes[i].rightChild;
-                        find = true;
-                    }
-                    else if (!listNodes.Contains(listNodes[i].rightChild))
-                    {
-                        listNodes.Add(listNodes[i].rightChild);
-                    }
-                }
-            }
-            listNodes[i].accessed = true;
-            i++;
 
-            //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
-            if(i >= listNodes.Count)
-            {
-                break;
+                    if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+                    {
+                        nodeAux = nodeAux.upChild;
+                    }
+                    else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+                    {
+                        nodeAux = nodeAux.rightChild;
+                    }
+                    else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+                    {
+                        nodeAux = nodeAux.leftChild;
+                    }
+                    else if (nodeAux.bottomChild != null && nodeAux != this.branchNode)
+                    {
+                        nodeAux = nodeAux.bottomChild;
+                    }
+                    else
+                    {
+                        end = true;
+                    }
+                }
             }
+            else if (objSearch == ObjSearch.trash)
+            {
+
+            }
+            else if (objSearch == ObjSearch.blocked)
+            {
+
+            }
+
+            return nodeFindList;
         }
-
-        foreach (Node node in listNodes)
+        else
         {
-            node.accessed = false;
+            return null;
         }
-
-        return nodeFind;
     }
 }

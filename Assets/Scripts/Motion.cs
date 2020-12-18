@@ -12,7 +12,7 @@ public class Motion : MonoBehaviour
         Right
     }
     // Start is called before the first frame update
-    void Move(GameObject gameObject,TypeMove typeMove)
+    void Move(GameObject gameObject, TypeMove typeMove)
     {
         switch (typeMove)
         {

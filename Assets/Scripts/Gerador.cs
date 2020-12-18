@@ -33,7 +33,7 @@ public class Gerador : MonoBehaviour
     {
         while (_size <= Size)
         {
-            TileType auxTipe = Random.Range(0, 10) < 5? TileType.Agua : TileType.Solo;
+            TileType auxTipe = Random.Range(0, 10) < 5 ? TileType.Agua : TileType.Solo;
 
             TileBase baseAuxTopo;
             TileBase baseAuxinferior;
@@ -50,7 +50,7 @@ public class Gerador : MonoBehaviour
             }
 
             GerarRelevo(Random.Range(0, MaxLarRelevo), Random.Range(0, MaxAutRelevo), 0, baseAuxTopo, baseAuxinferior, auxTipe);
-            
+
             if (_size > Size)
             {
                 //tileTerra.
@@ -61,23 +61,23 @@ public class Gerador : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void GerarRelevo(int w, int h, int y, TileBase superficie, TileBase inferior, TileType tileType)
     {
         TileBase aux;
-        for(int i = y; i < h+y; i++)
+        for (int i = y; i < h + y; i++)
         {
             //Largura mais a posição em x
-            for(int j = _size; j < w+_size; j++)
+            for (int j = _size; j < w + _size; j++)
             {
                 //Altura mais a posição em y
-                if (i == h+y - 1) aux = superficie;
+                if (i == h + y - 1) aux = superficie;
                 else aux = inferior;
 
                 //Tipo do objeto
-                if(tileType == TileType.Solo) tileTerra.SetTile(new Vector3Int(j, i, 0), aux);
+                if (tileType == TileType.Solo) tileTerra.SetTile(new Vector3Int(j, i, 0), aux);
 
                 if (tileType == TileType.Agua) tileAgua.SetTile(new Vector3Int(j, i, 0), aux);
             }
