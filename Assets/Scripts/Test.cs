@@ -21,15 +21,16 @@ public class Test : MonoBehaviour
         tree.branchNode.bottomChild.trash = true;
         tree.branchNode.rightChild.blocked = true;
         tree.branchNode.bottomChild.bottomChild.trash = true;
-        tree.printTree();
+        //tree.printTree();
         listaDeNos = tree.retornarCaminho();
+        find = tree.Search(Tree.ObjSearch.trash, Tree.TypeSearch.depth);
+        print("Find count: " + find[0].accessed);
         i = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        find = tree.Search(Tree.ObjSearch.player, Tree.TypeSearch.depth);
         time -= Time.deltaTime;
         if (i < find.Count & time <= 0)
         {
