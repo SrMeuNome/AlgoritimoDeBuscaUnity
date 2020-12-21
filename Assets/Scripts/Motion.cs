@@ -12,6 +12,27 @@ public class Motion : MonoBehaviour
         Right
     }
     // Start is called before the first frame update
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            Move(gameObject, TypeMove.Left);
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            Move(gameObject, TypeMove.Right);
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            Move(gameObject, TypeMove.Top);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Move(gameObject, TypeMove.Bottom);
+        }
+    }
+
     void Move(GameObject gameObject, TypeMove typeMove)
     {
         switch (typeMove)

@@ -11,9 +11,11 @@ public class Node
     public Node leftChild { get; set; }
     public Node rightChild { get; set; }
     public bool player { get; set; }
+    public bool npc { get; set; }
     public bool blocked { get; set; }
     public bool trash { get; set; }
     public bool accessed { get; set; }
+    public int heuristic { get; set; }
 
     public Node()
     {
@@ -22,8 +24,10 @@ public class Node
         this.leftChild = null;
         this.rightChild = null;
         this.player = false;
+        this.npc = false;
         this.blocked = false;
         this.trash = false;
+        this.heuristic = 0;
     }
 
 }

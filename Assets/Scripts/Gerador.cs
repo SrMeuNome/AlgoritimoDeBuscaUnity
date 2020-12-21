@@ -6,56 +6,33 @@ using UnityEngine.Tilemaps;
 public class Gerador : MonoBehaviour
 {
     //Tamanho do mapa
-    public int Size;
-    private int _size = 0;
+    public int SizeX;
 
-    public int MaxAutRelevo;
-    public int MaxLarRelevo;
+    public int SizeY;
 
+    public static Tree tree;
     //Tilemap é onde fica localizado os Tile Base
-    public Tilemap tileTerra;
-    public Tilemap tileAgua;
+    public Tilemap tileMap;
 
     //TileBase é o tile que queremos utilizar
-    public TileBase terraTopo;
-    public TileBase terra;
-    public TileBase aguaTopo;
-    public TileBase agua;
+    public TileBase block;
+    public TileBase none;
 
-    public enum TileType
-    {
-        Solo,
-        Agua
-    }
+    public GameObject player;
+    public GameObject trash;
+    public GameObject npcs;
+    public Vector2Int LocalSpawnPlayer;
 
     // Start is called before the first frame update
     void Start()
     {
-        while (_size <= Size)
-        {
-            TileType auxTipe = Random.Range(0, 10) < 5 ? TileType.Agua : TileType.Solo;
-
-            TileBase baseAuxTopo;
-            TileBase baseAuxinferior;
-
-            if (auxTipe == TileType.Agua)
-            {
-                baseAuxTopo = aguaTopo;
-                baseAuxinferior = agua;
-            }
-            else//if(auxTipe == TileType.Solo)
-            {
-                baseAuxTopo = terraTopo;
-                baseAuxinferior = terra;
-            }
-
-            GerarRelevo(Random.Range(0, MaxLarRelevo), Random.Range(0, MaxAutRelevo), 0, baseAuxTopo, baseAuxinferior, auxTipe);
-
-            if (_size > Size)
-            {
-                //tileTerra.
-            }
-        }
+        SizeX = SizeX < 0 ? SizeX * -1 : SizeX;
+        SizeY = SizeY < 0 ? SizeY * -1 : SizeY;
+        tree = new Tree(new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(SizeX, -SizeY));
+        int auxX = LocalSpawnPlayer.x < 0 ? LocalSpawnPlayer.x * -1 : LocalSpawnPlayer.x;
+        int auxY = LocalSpawnPlayer.y < 0 ? LocalSpawnPlayer.y * -1 : LocalSpawnPlayer.y;
+        LocalSpawnPlayer = new Vector2Int(auxX, -auxY);
+        GenerateMap();
     }
 
     // Update is called once per frame
@@ -64,25 +41,96 @@ public class Gerador : MonoBehaviour
 
     }
 
-    public void GerarRelevo(int w, int h, int y, TileBase superficie, TileBase inferior, TileType tileType)
+    public void GenerateMap()
     {
-        TileBase aux;
-        for (int i = y; i < h + y; i++)
+        bool end = false;
+        Node nodeAux = tree.branchNode;
+        while (!end)
         {
-            //Largura mais a posição em x
-            for (int j = _size; j < w + _size; j++)
+            int sortTrash = Random.Range(0, 5);
+            print(Random.Range(0, 5));
+
+            if(nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0)
             {
-                //Altura mais a posição em y
-                if (i == h + y - 1) aux = superficie;
-                else aux = inferior;
+                nodeAux.blocked = true;
+                MonoBehaviour.print("Bloqued: " + nodeAux.blocked);
+            }
 
-                //Tipo do objeto
-                if (tileType == TileType.Solo) tileTerra.SetTile(new Vector3Int(j, i, 0), aux);
+            if(nodeAux.value.Equals(LocalSpawnPlayer))
+            {
+                nodeAux.player = true;
+                Instantiate(player, new Vector3Int(LocalSpawnPlayer.x, LocalSpawnPlayer.y, 0), Quaternion.identity);
+            }
 
-                if (tileType == TileType.Agua) tileAgua.SetTile(new Vector3Int(j, i, 0), aux);
+            if (sortTrash == 1 & !nodeAux.blocked)
+            {
+                nodeAux.trash = true;
+                Instantiate(trash, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);
+                MonoBehaviour.print("Node: " + nodeAux.value + " Bloqued Trash: " + nodeAux.blocked);
+            }
+
+            if (nodeAux.blocked && !nodeAux.accessed)
+            {
+                tileMap.SetTile(new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), block);
+                nodeAux.accessed = true;
+            }
+            else
+            {
+                tileMap.SetTile(new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), none);
+                nodeAux.accessed = true;
+            }
+
+            if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+            {
+                nodeAux = nodeAux.upChild;
+            }
+            else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+            {
+                nodeAux = nodeAux.rightChild;
+            }
+            else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+            {
+                nodeAux = nodeAux.leftChild;
+            }
+            else if (nodeAux.bottomChild != null && !nodeAux.Equals(tree.branchNode))
+            {
+                nodeAux = nodeAux.bottomChild;
+            }
+            else
+            {
+                end = true;
             }
         }
-        //returna a ultima cordenada em X
-        _size += w;
+        //Limpando acesso aos Nós
+        nodeAux = tree.branchNode;
+        end = false;
+        while (!end)
+        {
+            if (nodeAux.accessed)
+            {
+                nodeAux.accessed = false;
+            }
+
+            if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+            {
+                nodeAux = nodeAux.upChild;
+            }
+            else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+            {
+                nodeAux = nodeAux.rightChild;
+            }
+            else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+            {
+                nodeAux = nodeAux.leftChild;
+            }
+            else if (nodeAux.bottomChild != null && !nodeAux.Equals(tree.branchNode))
+            {
+                nodeAux = nodeAux.bottomChild;
+            }
+            else
+            {
+                end = true;
+            }
+        }
     }
 }

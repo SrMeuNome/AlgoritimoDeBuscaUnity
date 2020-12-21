@@ -16,6 +16,7 @@ public class Tree
     public enum ObjSearch
     {
         player,
+        npc,
         blocked,
         trash
     }
@@ -244,58 +245,6 @@ public class Tree
         }
     }
 
-    public List<Node> retornarCaminho()
-    {
-        List<Node> listaDeNos = new List<Node>();
-
-        Node auxNode = this.branchNode;
-
-        //printando esquerda
-        while (auxNode != null)
-        {
-            if (auxNode != null)
-            {
-                listaDeNos.Add(auxNode);
-            }
-            auxNode = auxNode.leftChild;
-        }
-
-        auxNode = this.branchNode;
-
-        //printando direita
-        while (auxNode != null)
-        {
-            if (auxNode != null)
-            {
-                listaDeNos.Add(auxNode);
-            }
-            auxNode = auxNode.rightChild;
-        }
-
-        auxNode = this.branchNode;
-
-        //printando cima
-        while (auxNode != null)
-        {
-            listaDeNos.Add(auxNode);
-            auxNode = auxNode.upChild;
-        }
-
-        auxNode = this.branchNode;
-
-        //printando baixo
-        while (auxNode != null)
-        {
-            if (auxNode != null)
-            {
-                listaDeNos.Add(auxNode);
-            }
-            auxNode = auxNode.bottomChild;
-        }
-
-        return listaDeNos;
-    }
-
     public List<Node> Search(ObjSearch objSearch, TypeSearch typeSearch)
     {
         List<Node> nodeFindList = new List<Node>();
@@ -470,7 +419,7 @@ public class Tree
                 {
                     if (listNodes[i].upChild != null)
                     {
-                        if (!listNodes[i].upChild.blocked)
+                        if (!listNodes[i].upChild.accessed)
                         {
                             if (listNodes[i].upChild.blocked)
                             {
@@ -534,6 +483,82 @@ public class Tree
                     }
                 }
             }
+            else if (objSearch == ObjSearch.npc)
+            {
+                //Buscar na raiz
+                if (listNodes[i].npc)
+                {
+                    nodeFindList.Add(listNodes[i]);
+                }
+
+                while (true)
+                {
+                    if (listNodes[i].upChild != null)
+                    {
+                        if (!listNodes[i].upChild.accessed)
+                        {
+                            if (listNodes[i].upChild.npc)
+                            {
+                                nodeFindList.Add(listNodes[i].upChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].upChild))
+                            {
+                                listNodes.Add(listNodes[i].upChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].bottomChild != null)
+                    {
+                        if (!listNodes[i].bottomChild.accessed)
+                        {
+                            if (listNodes[i].bottomChild.npc)
+                            {
+                                nodeFindList.Add(listNodes[i].bottomChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].bottomChild))
+                            {
+                                listNodes.Add(listNodes[i].bottomChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].leftChild != null)
+                    {
+                        if (!listNodes[i].leftChild.accessed)
+                        {
+                            if (listNodes[i].leftChild.npc)
+                            {
+                                nodeFindList.Add(listNodes[i].leftChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].leftChild))
+                            {
+                                listNodes.Add(listNodes[i].leftChild);
+                            }
+                        }
+                    }
+                    if (listNodes[i].rightChild != null)
+                    {
+                        if (!listNodes[i].rightChild.accessed)
+                        {
+                            if (listNodes[i].rightChild.npc)
+                            {
+                                nodeFindList.Add(listNodes[i].rightChild);
+                            }
+                            else if (!listNodes.Contains(listNodes[i].rightChild))
+                            {
+                                listNodes.Add(listNodes[i].rightChild);
+                            }
+                        }
+                    }
+                    listNodes[i].accessed = true;
+                    i++;
+
+                    //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                    if (i >= listNodes.Count)
+                    {
+                        break;
+                    }
+                }
+            }
 
             foreach (Node node in listNodes)
             {
@@ -554,8 +579,6 @@ public class Tree
                     {
                         nodeFindList.Add(nodeAux);
                         nodeAux.accessed = true;
-                        MonoBehaviour.print("Node" + nodeAux.value + " Active: " + nodeAux.accessed);
-                        MonoBehaviour.print("Add: " + nodeFindList.Count);
                     }
                     else
                     {
@@ -565,22 +588,18 @@ public class Tree
                     if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
                     {
                         nodeAux = nodeAux.upChild;
-                        MonoBehaviour.print("Node Up" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
                     {
                         nodeAux = nodeAux.rightChild;
-                        MonoBehaviour.print("Node Right: " + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
                     {
                         nodeAux = nodeAux.leftChild;
-                        MonoBehaviour.print("Node Left" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
                     {
                         nodeAux = nodeAux.bottomChild;
-                        MonoBehaviour.print("Node Bottom" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else
                     {
@@ -596,8 +615,6 @@ public class Tree
                     {
                         nodeFindList.Add(nodeAux);
                         nodeAux.accessed = true;
-                        MonoBehaviour.print("Node" + nodeAux.value + " Active: " + nodeAux.accessed);
-                        MonoBehaviour.print("Add: " + nodeFindList.Count);
                     }
                     else
                     {
@@ -607,22 +624,18 @@ public class Tree
                     if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
                     {
                         nodeAux = nodeAux.upChild;
-                        MonoBehaviour.print("Node Up" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
                     {
                         nodeAux = nodeAux.rightChild;
-                        MonoBehaviour.print("Node Right: " + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
                     {
                         nodeAux = nodeAux.leftChild;
-                        MonoBehaviour.print("Node Left" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
                     {
                         nodeAux = nodeAux.bottomChild;
-                        MonoBehaviour.print("Node Bottom" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else
                     {
@@ -638,8 +651,6 @@ public class Tree
                     {
                         nodeFindList.Add(nodeAux);
                         nodeAux.accessed = true;
-                        MonoBehaviour.print("Node" + nodeAux.value + " Active: " + nodeAux.accessed);
-                        MonoBehaviour.print("Add: " + nodeFindList.Count);
                     }
                     else
                     {
@@ -649,22 +660,18 @@ public class Tree
                     if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
                     {
                         nodeAux = nodeAux.upChild;
-                        MonoBehaviour.print("Node Up" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
                     {
                         nodeAux = nodeAux.rightChild;
-                        MonoBehaviour.print("Node Right: " + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
                     {
                         nodeAux = nodeAux.leftChild;
-                        MonoBehaviour.print("Node Left" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
                     {
                         nodeAux = nodeAux.bottomChild;
-                        MonoBehaviour.print("Node Bottom" + nodeAux.value + " Active: " + nodeAux.accessed);
                     }
                     else
                     {
@@ -672,37 +679,68 @@ public class Tree
                     }
                 }
             }
-            MonoBehaviour.print("Node list Func: " + nodeFindList.Count);
+            else if (objSearch == ObjSearch.npc)
+            {
+                while (!end)
+                {
+                    if (nodeAux.npc && !nodeAux.accessed)
+                    {
+                        nodeFindList.Add(nodeAux);
+                        nodeAux.accessed = true;
+                    }
+                    else
+                    {
+                        nodeAux.accessed = true;
+                    }
+
+                    if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+                    {
+                        nodeAux = nodeAux.upChild;
+                    }
+                    else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+                    {
+                        nodeAux = nodeAux.rightChild;
+                    }
+                    else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+                    {
+                        nodeAux = nodeAux.leftChild;
+                    }
+                    else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                    {
+                        nodeAux = nodeAux.bottomChild;
+                    }
+                    else
+                    {
+                        end = true;
+                    }
+                }
+            }
 
             //Limpando acesso aos Nós
             nodeAux = this.branchNode;
+            end = false;
             while (!end)
             {
                 if (nodeAux.accessed)
                 {
                     nodeAux.accessed = false;
-                    MonoBehaviour.print("Node" + nodeAux.value + " Active: " + nodeAux.accessed);
                 }
 
                 if (nodeAux.upChild != null && nodeAux.upChild.accessed)
                 {
                     nodeAux = nodeAux.upChild;
-                    MonoBehaviour.print("Node Up" + nodeAux.value + " Active: " + nodeAux.accessed);
                 }
                 else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
                 {
                     nodeAux = nodeAux.rightChild;
-                    MonoBehaviour.print("Node Right: " + nodeAux.value + " Active: " + nodeAux.accessed);
                 }
                 else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
                 {
                     nodeAux = nodeAux.leftChild;
-                    MonoBehaviour.print("Node Left" + nodeAux.value + " Active: " + nodeAux.accessed);
                 }
                 else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
                 {
                     nodeAux = nodeAux.bottomChild;
-                    MonoBehaviour.print("Node Bottom" + nodeAux.value + " Active: " + nodeAux.accessed);
                 }
                 else
                 {
@@ -716,5 +754,425 @@ public class Tree
         {
             return null;
         }
+    }
+
+    public Node SearchByValue(Vector3 position, TypeSearch typeSearch)
+    {
+        Vector2Int value = new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y));
+        Node find = new Node();
+        Node nodeAux = this.branchNode;
+        bool end = false;
+        List<Node> listNodes = new List<Node>();
+        int i = 0;
+
+        listNodes.Add(branchNode);
+
+        if (typeSearch == TypeSearch.width)
+        {
+
+            //Buscar na raiz
+            if (listNodes[i].value.Equals(value))
+            {
+                find = listNodes[i];
+            }
+
+            while (true)
+            {
+                if (listNodes[i].upChild != null)
+                {
+                    if (!listNodes[i].upChild.accessed)
+                    {
+                        if (listNodes[i].upChild.value.Equals(value))
+                        {
+                            find = listNodes[i].upChild;
+                            break;
+                        }
+                        else if (!listNodes.Contains(listNodes[i].upChild))
+                        {
+                            listNodes.Add(listNodes[i].upChild);
+                        }
+                    }
+                }
+                if (listNodes[i].bottomChild != null)
+                {
+                    if (!listNodes[i].bottomChild.accessed)
+                    {
+                        if (listNodes[i].bottomChild.value.Equals(value))
+                        {
+                            find = listNodes[i].bottomChild;
+                            break;
+                        }
+                        else if (!listNodes.Contains(listNodes[i].bottomChild))
+                        {
+                            listNodes.Add(listNodes[i].bottomChild);
+                        }
+                    }
+                }
+                if (listNodes[i].leftChild != null)
+                {
+                    if (!listNodes[i].leftChild.accessed)
+                    {
+                        if (listNodes[i].leftChild.value.Equals(value))
+                        {
+                            find = listNodes[i].leftChild;
+                            break;
+                        }
+                        else if (!listNodes.Contains(listNodes[i].leftChild))
+                        {
+                            listNodes.Add(listNodes[i].leftChild);
+                        }
+                    }
+                }
+                if (listNodes[i].rightChild != null)
+                {
+                    if (!listNodes[i].rightChild.accessed)
+                    {
+                        if (listNodes[i].rightChild.value.Equals(value))
+                        {
+                            find = listNodes[i].rightChild;
+                            break;
+                        }
+                        else if (!listNodes.Contains(listNodes[i].rightChild))
+                        {
+                            listNodes.Add(listNodes[i].rightChild);
+                        }
+                    }
+                }
+                listNodes[i].accessed = true;
+                i++;
+
+                //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                if (i >= listNodes.Count)
+                {
+                    break;
+                }
+            }
+            foreach (Node node in listNodes)
+            {
+                node.accessed = false;
+            }
+        }
+        else if (typeSearch == TypeSearch.depth)
+        {
+            while (!end)
+            {
+                if (nodeAux.value.Equals(value) && !nodeAux.accessed)
+                {
+                    find = nodeAux;
+                    nodeAux.accessed = true;
+                }
+                else
+                {
+                    nodeAux.accessed = true;
+                }
+
+                if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
+            }
+            //Limpando acesso aos Nós
+            nodeAux = this.branchNode;
+            end = false;
+            while (!end)
+            {
+                if (nodeAux.accessed)
+                {
+                    nodeAux.accessed = false;
+                }
+
+                if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
+            }
+            return find;
+        }
+        return null;
+    }
+
+    public List<Vector3Int> MakeRoad()
+    {
+        List<Vector3Int> road = new List<Vector3Int>();
+        List<Node> nodesTrash = null;
+        Node nodeAux = this.branchNode;
+        Node trash = null;
+        List<Node> player = null;
+        int near = int.MaxValue;
+        bool end = false;
+        bool find = false;
+
+        nodesTrash = this.Search(ObjSearch.trash, TypeSearch.depth);
+        player = this.Search(ObjSearch.player, TypeSearch.depth);
+        MonoBehaviour.print("Player: " + player.Count);
+        MonoBehaviour.print("nodesTrash: " + nodesTrash.Count);
+
+        nodesTrash.ForEach((node) =>
+        {
+            int valueNodeX = node.value.x;
+            int valuePlayerX = player[0].value.x;
+            int valueNodeY = node.value.y;
+            int valuePlayerY = player[0].value.y;
+
+            if (valueNodeX < 0) valueNodeX *= -1;
+
+            if (valuePlayerX < 0) valuePlayerX *= -1;
+
+            int valueX = valueNodeX - valuePlayerX;
+
+            if (valueX < 0) valueX *= -1;
+
+            if (valueNodeY < 0) valueNodeY *= -1;
+
+            if (valuePlayerY < 0) valuePlayerY *= -1;
+
+            int valueY = valueNodeY - valuePlayerY;
+
+            if (valueY < 0) valueY *= -1;
+
+            int distance = valueX + valueY;
+
+            MonoBehaviour.print("distance: " + distance);
+            MonoBehaviour.print("near: " + near);
+
+            if (distance <= near)
+            {
+                MonoBehaviour.print("If distance: " + distance);
+                trash = node;
+                near = distance;
+            }
+        });
+
+        if(trash == null)
+        {
+            return null;
+        }
+
+        //Adicionando heuristicas
+        nodeAux = this.branchNode;
+        while (!end)
+        {
+            int valueNodeX = nodeAux.value.x;
+            int valueTrashX = trash.value.x;
+            int valueNodeY = nodeAux.value.y;
+            int valueTrashY = trash.value.y;
+            int distance;
+            int valueX, valueY;
+
+            if (nodeAux.blocked)
+            {
+                distance = int.MaxValue;
+            }
+            else
+            {
+
+                if (valueNodeX < 0) valueNodeX *= -1;
+
+                if (valueTrashX < 0) valueTrashX *= -1;
+
+                valueX = valueNodeX - valueTrashX;
+
+                if (valueX < 0) valueX *= -1;
+
+                if (valueNodeY < 0) valueNodeY *= -1;
+
+                if (valueTrashY < 0) valueTrashY *= -1;
+
+                valueY = valueNodeY - valueTrashY;
+
+                if (valueY < 0) valueY *= -1;
+
+                distance = valueX + valueY;
+            }
+
+            if (!nodeAux.accessed)
+            {
+                nodeAux.accessed = true;
+                nodeAux.heuristic = distance;
+                MonoBehaviour.print("node: " + nodeAux.value + " heuristic: " + nodeAux.heuristic);
+            }
+
+            if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+            {
+                nodeAux = nodeAux.upChild;
+            }
+            else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+            {
+                nodeAux = nodeAux.rightChild;
+            }
+            else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+            {
+                nodeAux = nodeAux.leftChild;
+            }
+            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+            {
+                nodeAux = nodeAux.bottomChild;
+            }
+            else
+            {
+                end = true;
+            }
+        }
+
+        //Limpando acesso aos Nós
+        nodeAux = this.branchNode;
+        end = false;
+        while (!end)
+        {
+            if (nodeAux.accessed)
+            {
+                nodeAux.accessed = false;
+            }
+
+            if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+            {
+                nodeAux = nodeAux.upChild;
+            }
+            else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+            {
+                nodeAux = nodeAux.rightChild;
+            }
+            else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+            {
+                nodeAux = nodeAux.leftChild;
+            }
+            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+            {
+                nodeAux = nodeAux.bottomChild;
+            }
+            else
+            {
+                end = true;
+            }
+        }
+
+        MonoBehaviour.print("Finalizei a distribuição de heuristicas");
+
+        Node auxRoad = null;
+
+        nodeAux = player[0];
+
+        List<Node> listNodes = new List<Node>();
+
+        while (!find)
+        {
+            if (nodeAux.upChild != null && !nodeAux.upChild.blocked && !nodeAux.upChild.accessed)
+            {
+                listNodes.Add(nodeAux.upChild);
+                MonoBehaviour.print("Finlho de cima");
+            }
+            if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && !nodeAux.bottomChild.accessed)
+            {
+                listNodes.Add(nodeAux.bottomChild);
+                MonoBehaviour.print("Finlho de baixo");
+            }
+            if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && !nodeAux.leftChild.accessed)
+            {
+                listNodes.Add(nodeAux.leftChild);
+                MonoBehaviour.print("Finlho de esquerda");
+            }
+            if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed)
+            {
+                listNodes.Add(nodeAux.rightChild);
+                MonoBehaviour.print("Finlho de direita");
+            }
+
+            listNodes.ForEach((node) =>
+            {
+                MonoBehaviour.print("Index find: " + listNodes.FindIndex((obj) => { return obj.Equals(node); }));
+                if (listNodes.FindIndex((obj) => { return obj.Equals(node); }) == 0)
+                {
+                    auxRoad = node;
+                }
+                else
+                {
+                    if (node.heuristic <= auxRoad.heuristic)
+                    {
+                        auxRoad = node;
+                    }
+                }
+            });
+
+            //MonoBehaviour.print("auxRoad: " + auxRoad.value + "nodeAux: " + nodeAux.value);
+
+            if (auxRoad.Equals(trash))
+            {
+                find = true;
+            }
+
+            road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
+            auxRoad.accessed = true;
+            nodeAux = auxRoad;
+            listNodes.RemoveRange(0, listNodes.Count);
+            MonoBehaviour.print("Lista de nós: " + listNodes.Count);
+        }
+
+        //Limpando acesso aos Nós
+        nodeAux = this.branchNode;
+        end = false;
+        while (!end)
+        {
+            if (nodeAux.accessed)
+            {
+                nodeAux.accessed = false;
+            }
+
+            if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+            {
+                nodeAux = nodeAux.upChild;
+            }
+            else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+            {
+                nodeAux = nodeAux.rightChild;
+            }
+            else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+            {
+                nodeAux = nodeAux.leftChild;
+            }
+            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+            {
+                nodeAux = nodeAux.bottomChild;
+            }
+            else
+            {
+                end = true;
+            }
+        }
+
+        MonoBehaviour.print("Finalizei o find");
+
+        return road;
     }
 }
