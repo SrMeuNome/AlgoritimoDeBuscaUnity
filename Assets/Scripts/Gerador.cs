@@ -50,13 +50,17 @@ public class Gerador : MonoBehaviour
             int sortTrash = Random.Range(0, 5);
             print(Random.Range(0, 5));
 
-            if(nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0)
+            if (nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0
+                | (nodeAux.value.x == SizeX / 2 - 1 && (nodeAux.value.y >= -(SizeY / 2 - 1) || nodeAux.value.y <= -(SizeY - (SizeY / 2 - 1))))
+                | (nodeAux.value.y == -(SizeY / 2 - 1) && ((nodeAux.value.x <= SizeX / 2 - 1 && nodeAux.value.x != SizeX / 2 - 3) || (nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 3))))
+                | (nodeAux.value.x == SizeX - (SizeX / 2 - 1) && (nodeAux.value.y >= -(SizeY / 2 - 1) || nodeAux.value.y <= -(SizeY - (SizeY / 2 - 1))))
+                | (nodeAux.value.y == -(SizeY - (SizeY / 2 - 1)) && ((nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 2)) || (nodeAux.value.x <= SizeX / 2 - 1) && nodeAux.value.x != SizeX / 2 - 5)))
             {
                 nodeAux.blocked = true;
                 MonoBehaviour.print("Bloqued: " + nodeAux.blocked);
             }
 
-            if(nodeAux.value.Equals(LocalSpawnPlayer))
+            if (nodeAux.value.Equals(LocalSpawnPlayer))
             {
                 nodeAux.player = true;
                 Instantiate(player, new Vector3Int(LocalSpawnPlayer.x, LocalSpawnPlayer.y, 0), Quaternion.identity);

@@ -35,22 +35,36 @@ public class Motion : MonoBehaviour
 
     void Move(GameObject gameObject, TypeMove typeMove)
     {
+        Node nodeAux;
         switch (typeMove)
         {
             case TypeMove.Top:
+                nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                nodeAux.player = false;
                 gameObject.transform.Translate(new Vector3Int(0, 1, 0));
                 break;
 
             case TypeMove.Bottom:
+                nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                nodeAux.player = false;
                 gameObject.transform.Translate(new Vector3Int(0, -1, 0));
                 break;
 
             case TypeMove.Right:
+                nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                nodeAux.player = false;
                 gameObject.transform.Translate(new Vector3Int(1, 0, 0));
                 break;
 
             case TypeMove.Left:
+                nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                nodeAux.player = false;
                 gameObject.transform.Translate(new Vector3Int(-1, 0, 0));
+                break;
+
+            default:
+                nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                nodeAux.player = true;
                 break;
         }
     }

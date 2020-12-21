@@ -1091,27 +1091,22 @@ public class Tree
             if (nodeAux.upChild != null && !nodeAux.upChild.blocked && !nodeAux.upChild.accessed)
             {
                 listNodes.Add(nodeAux.upChild);
-                MonoBehaviour.print("Finlho de cima");
             }
             if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && !nodeAux.bottomChild.accessed)
             {
                 listNodes.Add(nodeAux.bottomChild);
-                MonoBehaviour.print("Finlho de baixo");
             }
             if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && !nodeAux.leftChild.accessed)
             {
                 listNodes.Add(nodeAux.leftChild);
-                MonoBehaviour.print("Finlho de esquerda");
             }
             if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed)
             {
                 listNodes.Add(nodeAux.rightChild);
-                MonoBehaviour.print("Finlho de direita");
             }
 
             listNodes.ForEach((node) =>
             {
-                MonoBehaviour.print("Index find: " + listNodes.FindIndex((obj) => { return obj.Equals(node); }));
                 if (listNodes.FindIndex((obj) => { return obj.Equals(node); }) == 0)
                 {
                     auxRoad = node;
@@ -1125,8 +1120,6 @@ public class Tree
                 }
             });
 
-            //MonoBehaviour.print("auxRoad: " + auxRoad.value + "nodeAux: " + nodeAux.value);
-
             if (auxRoad.Equals(trash))
             {
                 find = true;
@@ -1135,8 +1128,7 @@ public class Tree
             road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
             auxRoad.accessed = true;
             nodeAux = auxRoad;
-            listNodes.RemoveRange(0, listNodes.Count);
-            MonoBehaviour.print("Lista de nós: " + listNodes.Count);
+            listNodes = new List<Node>();
         }
 
         //Limpando acesso aos Nós
