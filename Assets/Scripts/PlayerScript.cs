@@ -19,14 +19,11 @@ public class PlayerScript : MonoBehaviour
     void FixedUpdate()
     {
         time -= Time.deltaTime;
-
+        int qtd = roat.Count;
 
         if (roat != null)
         {
-            print("i: " + i);
-            print("Roat: " + roat.Count);
-            print("Position: " + gameObject.transform.position);
-            if (i < roat.Count & time <= 0)
+            if (i < qtd & time <= 0)
             {
                 Node nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
                 nodeAux.player = false;
@@ -34,9 +31,15 @@ public class PlayerScript : MonoBehaviour
                 nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
                 nodeAux.player = true;
                 time = 0.5f;
-                print("if");
                 i++;
                 attempt = 0;
+            }
+            else if (i >= qtd & time <= 0)
+            {
+                roat = Gerador.tree.MakeRoad();
+                i = 0;
+                time = 0.5f;
+                print("if do else");
             }
         } else
         {
@@ -45,6 +48,7 @@ public class PlayerScript : MonoBehaviour
             {
                 timeTrash = 0.5f;
                 roat = Gerador.tree.MakeRoad();
+                i = 0;
                 attempt++;
             }
         }

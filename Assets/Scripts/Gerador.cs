@@ -57,7 +57,6 @@ public class Gerador : MonoBehaviour
                 | (nodeAux.value.y == -(SizeY - (SizeY / 2 - 1)) && ((nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 2)) || (nodeAux.value.x <= SizeX / 2 - 1) && nodeAux.value.x != SizeX / 2 - 5)))
             {
                 nodeAux.blocked = true;
-                MonoBehaviour.print("Bloqued: " + nodeAux.blocked);
             }
 
             if (nodeAux.value.Equals(LocalSpawnPlayer))
@@ -70,7 +69,6 @@ public class Gerador : MonoBehaviour
             {
                 nodeAux.trash = true;
                 Instantiate(trash, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);
-                MonoBehaviour.print("Node: " + nodeAux.value + " Bloqued Trash: " + nodeAux.blocked);
             }
 
             if (nodeAux.blocked && !nodeAux.accessed)

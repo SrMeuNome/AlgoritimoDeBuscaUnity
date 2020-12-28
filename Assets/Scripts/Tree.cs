@@ -936,8 +936,6 @@ public class Tree
 
         nodesTrash = this.Search(ObjSearch.trash, TypeSearch.depth);
         player = this.Search(ObjSearch.player, TypeSearch.depth);
-        MonoBehaviour.print("Player: " + player.Count);
-        MonoBehaviour.print("nodesTrash: " + nodesTrash.Count);
 
         nodesTrash.ForEach((node) =>
         {
@@ -964,12 +962,8 @@ public class Tree
 
             int distance = valueX + valueY;
 
-            MonoBehaviour.print("distance: " + distance);
-            MonoBehaviour.print("near: " + near);
-
             if (distance <= near)
             {
-                MonoBehaviour.print("If distance: " + distance);
                 trash = node;
                 near = distance;
             }
@@ -1021,7 +1015,6 @@ public class Tree
             {
                 nodeAux.accessed = true;
                 nodeAux.heuristic = distance;
-                MonoBehaviour.print("node: " + nodeAux.value + " heuristic: " + nodeAux.heuristic);
             }
 
             if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
@@ -1085,6 +1078,8 @@ public class Tree
         nodeAux = player[0];
 
         List<Node> listNodes = new List<Node>();
+        
+        int l = 0;
 
         while (!find)
         {
@@ -1103,6 +1098,26 @@ public class Tree
             if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed)
             {
                 listNodes.Add(nodeAux.rightChild);
+            }
+
+            if (listNodes.Count == 0)
+            {
+                if (nodeAux.upChild != null && !nodeAux.upChild.blocked && nodeAux.upChild.accessed)
+                {
+                    nodeAux.upChild.accessed = false;
+                }
+                if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && nodeAux.bottomChild.accessed)
+                {
+                    nodeAux.bottomChild.accessed = false;
+                }
+                if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && nodeAux.leftChild.accessed)
+                {
+                    nodeAux.leftChild.accessed = false;
+                }
+                if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && nodeAux.rightChild.accessed)
+                {
+                    nodeAux.rightChild.accessed = false;
+                }
             }
 
             listNodes.ForEach((node) =>
@@ -1128,7 +1143,17 @@ public class Tree
             road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
             auxRoad.accessed = true;
             nodeAux = auxRoad;
-            listNodes = new List<Node>();
+            listNodes.RemoveRange(0, listNodes.Count);
+
+            if (l > 100)
+            {
+                break;
+            }
+            if(l>50)
+            {
+                MonoBehaviour.print("Up acessed: " + auxRoad.upChild.accessed + " Bottom acessed: " + auxRoad.bottomChild.accessed + " Right acessed: " + auxRoad.rightChild.accessed + " Left acessed: " + auxRoad.leftChild.accessed);
+            }
+            l++;
         }
 
         //Limpando acesso aos Nós
@@ -1164,7 +1189,7 @@ public class Tree
         }
 
         MonoBehaviour.print("Finalizei o find");
-
+        MonoBehaviour.print("Lista de caminhos: " + road.ToString());
         return road;
     }
 }

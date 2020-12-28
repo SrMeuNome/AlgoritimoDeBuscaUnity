@@ -21,13 +21,13 @@ public class TrashScript : MonoBehaviour
         {
             Node node = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
             node.trash = false;
-            List<Vector3Int> listAux = player.GetComponent<PlayerScript>().roat;
-            listAux.RemoveRange(0, listAux.Count);
-            if (Gerador.tree.MakeRoad() != null)
-            {
-                player.GetComponent<PlayerScript>().i = 0;
-                player.GetComponent<PlayerScript>().roat = Gerador.tree.MakeRoad();
-            }
+            //List<Vector3Int> listAux = player.GetComponent<PlayerScript>().roat;
+            //listAux.RemoveRange(0, listAux.Count);
+            //if (Gerador.tree.MakeRoad() != null)
+            //{
+                //player.GetComponent<PlayerScript>().i = 0;
+                //player.GetComponent<PlayerScript>().roat = Gerador.tree.MakeRoad();
+            //}
             Destroy(gameObject);
         }
     }
