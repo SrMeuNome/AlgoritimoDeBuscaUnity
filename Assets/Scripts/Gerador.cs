@@ -28,6 +28,10 @@ public class Gerador : MonoBehaviour
     public Vector2Int LocalSpawnNPC3;
     public Vector2Int LocalSpawnNPC4;
 
+    public bool spawnNPCs = true;
+    public bool spawnWalls = true;
+    public bool allTrashs = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,13 +50,17 @@ public class Gerador : MonoBehaviour
         Node nodeAux = tree.branchNode;
         while (!end)
         {
-            int sortTrash = Random.Range(0, 5);
+            int sortTrash = allTrashs? 1 : Random.Range(0, 5);
 
-            if (nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0
+            if (spawnWalls && (nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0
                 | (nodeAux.value.x == SizeX / 2 - 1 && (nodeAux.value.y >= -(SizeY / 2 - 1) || nodeAux.value.y <= -(SizeY - (SizeY / 2 - 1))))
                 | (nodeAux.value.y == -(SizeY / 2 - 1) && ((nodeAux.value.x <= SizeX / 2 - 1 && nodeAux.value.x != SizeX / 2 - 3) || (nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 3))))
                 | (nodeAux.value.x == SizeX - (SizeX / 2 - 1) && (nodeAux.value.y >= -(SizeY / 2 - 1) || nodeAux.value.y <= -(SizeY - (SizeY / 2 - 1))))
-                | (nodeAux.value.y == -(SizeY - (SizeY / 2 - 1)) && ((nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 2)) || (nodeAux.value.x <= SizeX / 2 - 1) && nodeAux.value.x != SizeX / 2 - 5)))
+                | (nodeAux.value.y == -(SizeY - (SizeY / 2 - 1)) && ((nodeAux.value.x >= SizeX - (SizeX / 2 - 1) && nodeAux.value.x != SizeX - (SizeX / 2 - 2)) || (nodeAux.value.x <= SizeX / 2 - 1) && nodeAux.value.x != SizeX / 2 - 5))))
+            {
+                nodeAux.blocked = true;
+            }
+            else if(nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0)
             {
                 nodeAux.blocked = true;
             }
@@ -69,7 +77,7 @@ public class Gerador : MonoBehaviour
                 Instantiate(trash, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);
             }
 
-            if ((nodeAux.value.Equals(LocalSpawnNPC1) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC2) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC3) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC4) & !nodeAux.blocked))
+            if (spawnNPCs && ((nodeAux.value.Equals(LocalSpawnNPC1) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC2) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC3) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC4) & !nodeAux.blocked)))
             {
                 nodeAux.npc = true;
                 Instantiate(npcs, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);

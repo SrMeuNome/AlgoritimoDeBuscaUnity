@@ -146,7 +146,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roat: []
   i: 0
-  typeSearch: 0
+  activateMove: 0
+  typeSearch: 1
 --- !u!114 &2491826269597104649
 MonoBehaviour:
   m_ObjectHideFlags: 0

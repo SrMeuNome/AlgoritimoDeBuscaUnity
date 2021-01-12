@@ -29,13 +29,13 @@ public class PlayerScript : MonoBehaviour
             if (i < qtd & time <= 0)
             {
                 activateMove = false;
-                Node nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                Node nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, typeSearch);
                 nodeAux.player = false;
-                Node nextPositionNode = Gerador.tree.SearchByValue(roat[i], Tree.TypeSearch.depth);
+                Node nextPositionNode = Gerador.tree.SearchByValue(roat[i], typeSearch);
                 if (nextPositionNode.npc == false && nextPositionNode.player == false)
                 {
                     gameObject.transform.position = roat[i];
-                    nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                    nodeAux = Gerador.tree.SearchByValue(gameObject.transform.position, typeSearch);
                     nodeAux.player = true;
                     time = 0.5f;
                     i++;

@@ -422,6 +422,21 @@ PrefabInstance:
       propertyPath: tileMap
       value: 
       objectReference: {fileID: 1355567889}
+    - target: {fileID: 4476465624505546054, guid: 5d24ffe13181e104397d880e587fc9b8,
+        type: 3}
+      propertyPath: spawnNPCs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476465624505546054, guid: 5d24ffe13181e104397d880e587fc9b8,
+        type: 3}
+      propertyPath: spawnWalls
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4476465624505546054, guid: 5d24ffe13181e104397d880e587fc9b8,
+        type: 3}
+      propertyPath: LocalSpawnNPC4.x
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 4476465624505546055, guid: 5d24ffe13181e104397d880e587fc9b8,
         type: 3}
       propertyPath: m_Name
