@@ -23,6 +23,11 @@ public class Gerador : MonoBehaviour
     public GameObject npcs;
     public Vector2Int LocalSpawnPlayer;
 
+    public Vector2Int LocalSpawnNPC1;
+    public Vector2Int LocalSpawnNPC2;
+    public Vector2Int LocalSpawnNPC3;
+    public Vector2Int LocalSpawnNPC4;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,12 +40,6 @@ public class Gerador : MonoBehaviour
         GenerateMap();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void GenerateMap()
     {
         bool end = false;
@@ -48,7 +47,6 @@ public class Gerador : MonoBehaviour
         while (!end)
         {
             int sortTrash = Random.Range(0, 5);
-            print(Random.Range(0, 5));
 
             if (nodeAux.value.x == SizeX | nodeAux.value.y == -SizeY | nodeAux.value.x == 0 | nodeAux.value.y == 0
                 | (nodeAux.value.x == SizeX / 2 - 1 && (nodeAux.value.y >= -(SizeY / 2 - 1) || nodeAux.value.y <= -(SizeY - (SizeY / 2 - 1))))
@@ -69,6 +67,12 @@ public class Gerador : MonoBehaviour
             {
                 nodeAux.trash = true;
                 Instantiate(trash, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);
+            }
+
+            if ((nodeAux.value.Equals(LocalSpawnNPC1) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC2) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC3) & !nodeAux.blocked) || (nodeAux.value.Equals(LocalSpawnNPC4) & !nodeAux.blocked))
+            {
+                nodeAux.npc = true;
+                Instantiate(npcs, new Vector3Int(nodeAux.value.x, nodeAux.value.y, 0), Quaternion.identity);
             }
 
             if (nodeAux.blocked && !nodeAux.accessed)
@@ -101,7 +105,9 @@ public class Gerador : MonoBehaviour
             else
             {
                 end = true;
+                print("Cheguei no else");
             }
+            print("Fim gerador");
         }
         //Limpando acesso aos Nós
         nodeAux = tree.branchNode;

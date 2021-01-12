@@ -5,7 +5,7 @@ using UnityEngine;
 public class TrashScript : MonoBehaviour
 {
 
-    private GameObject player;
+    private GameObject [] players;
 
     // Start is called before the first frame update
     void Start()
@@ -16,19 +16,22 @@ public class TrashScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        player = GameObject.FindWithTag("Player");
-        if (player.transform.position.Equals(gameObject.transform.position))
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach(GameObject player in players)
         {
-            Node node = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
-            node.trash = false;
-            //List<Vector3Int> listAux = player.GetComponent<PlayerScript>().roat;
-            //listAux.RemoveRange(0, listAux.Count);
-            //if (Gerador.tree.MakeRoad() != null)
-            //{
+            if (player.transform.position.Equals(gameObject.transform.position))
+            {
+                Node node = Gerador.tree.SearchByValue(gameObject.transform.position, Tree.TypeSearch.depth);
+                node.trash = false;
+                //List<Vector3Int> listAux = player.GetComponent<PlayerScript>().roat;
+                //listAux.RemoveRange(0, listAux.Count);
+                //if (Gerador.tree.MakeRoad() != null)
+                //{
                 //player.GetComponent<PlayerScript>().i = 0;
                 //player.GetComponent<PlayerScript>().roat = Gerador.tree.MakeRoad();
-            //}
-            Destroy(gameObject);
+                //}
+                Destroy(gameObject);
+            }
         }
     }
 }

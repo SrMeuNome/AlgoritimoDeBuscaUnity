@@ -65,8 +65,10 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Gerador.cs" />
     <Compile Include="Assets\Scripts\Motion.cs" />
+    <Compile Include="Assets\Scripts\NPCScript.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\PlayerScript.cs" />
+    <Compile Include="Assets\Scripts\SortColor.cs" />
     <Compile Include="Assets\Scripts\Test.cs" />
     <Compile Include="Assets\Scripts\TrashScript.cs" />
     <Compile Include="Assets\Scripts\Tree.cs" />

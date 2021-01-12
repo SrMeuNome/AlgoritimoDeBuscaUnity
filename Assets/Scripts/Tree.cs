@@ -851,6 +851,7 @@ public class Tree
             {
                 node.accessed = false;
             }
+            return find;
         }
         else if (typeSearch == TypeSearch.depth)
         {
@@ -923,268 +924,543 @@ public class Tree
         return null;
     }
 
-    public List<Vector3Int> MakeRoad()
+    public List<Vector3Int> MakeRoad(Vector3 positonObj, TypeSearch typeSearch)
     {
         List<Vector3Int> road = new List<Vector3Int>();
         List<Node> nodesTrash = null;
-        Node nodeAux = this.branchNode;
         Node trash = null;
-        List<Node> player = null;
+        Node player = null;
         int near = int.MaxValue;
         bool end = false;
         bool find = false;
 
-        nodesTrash = this.Search(ObjSearch.trash, TypeSearch.depth);
-        player = this.Search(ObjSearch.player, TypeSearch.depth);
+        nodesTrash = this.Search(ObjSearch.trash, typeSearch);
+        player = this.SearchByValue(positonObj, typeSearch);
 
-        nodesTrash.ForEach((node) =>
+        if (typeSearch == TypeSearch.depth)
         {
-            int valueNodeX = node.value.x;
-            int valuePlayerX = player[0].value.x;
-            int valueNodeY = node.value.y;
-            int valuePlayerY = player[0].value.y;
-
-            if (valueNodeX < 0) valueNodeX *= -1;
-
-            if (valuePlayerX < 0) valuePlayerX *= -1;
-
-            int valueX = valueNodeX - valuePlayerX;
-
-            if (valueX < 0) valueX *= -1;
-
-            if (valueNodeY < 0) valueNodeY *= -1;
-
-            if (valuePlayerY < 0) valuePlayerY *= -1;
-
-            int valueY = valueNodeY - valuePlayerY;
-
-            if (valueY < 0) valueY *= -1;
-
-            int distance = valueX + valueY;
-
-            if (distance <= near)
+            Node nodeAux = this.branchNode;
+            nodesTrash.ForEach((node) =>
             {
-                trash = node;
-                near = distance;
-            }
-        });
-
-        if(trash == null)
-        {
-            return null;
-        }
-
-        //Adicionando heuristicas
-        nodeAux = this.branchNode;
-        while (!end)
-        {
-            int valueNodeX = nodeAux.value.x;
-            int valueTrashX = trash.value.x;
-            int valueNodeY = nodeAux.value.y;
-            int valueTrashY = trash.value.y;
-            int distance;
-            int valueX, valueY;
-
-            if (nodeAux.blocked)
-            {
-                distance = int.MaxValue;
-            }
-            else
-            {
+                int valueNodeX = node.value.x;
+                int valuePlayerX = player.value.x;
+                int valueNodeY = node.value.y;
+                int valuePlayerY = player.value.y;
 
                 if (valueNodeX < 0) valueNodeX *= -1;
 
-                if (valueTrashX < 0) valueTrashX *= -1;
+                if (valuePlayerX < 0) valuePlayerX *= -1;
 
-                valueX = valueNodeX - valueTrashX;
+                int valueX = valueNodeX - valuePlayerX;
 
                 if (valueX < 0) valueX *= -1;
 
                 if (valueNodeY < 0) valueNodeY *= -1;
 
-                if (valueTrashY < 0) valueTrashY *= -1;
+                if (valuePlayerY < 0) valuePlayerY *= -1;
 
-                valueY = valueNodeY - valueTrashY;
+                int valueY = valueNodeY - valuePlayerY;
 
                 if (valueY < 0) valueY *= -1;
 
-                distance = valueX + valueY;
-            }
+                int distance = valueX + valueY;
 
-            if (!nodeAux.accessed)
-            {
-                nodeAux.accessed = true;
-                nodeAux.heuristic = distance;
-            }
-
-            if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
-            {
-                nodeAux = nodeAux.upChild;
-            }
-            else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
-            {
-                nodeAux = nodeAux.rightChild;
-            }
-            else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
-            {
-                nodeAux = nodeAux.leftChild;
-            }
-            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
-            {
-                nodeAux = nodeAux.bottomChild;
-            }
-            else
-            {
-                end = true;
-            }
-        }
-
-        //Limpando acesso aos Nós
-        nodeAux = this.branchNode;
-        end = false;
-        while (!end)
-        {
-            if (nodeAux.accessed)
-            {
-                nodeAux.accessed = false;
-            }
-
-            if (nodeAux.upChild != null && nodeAux.upChild.accessed)
-            {
-                nodeAux = nodeAux.upChild;
-            }
-            else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
-            {
-                nodeAux = nodeAux.rightChild;
-            }
-            else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
-            {
-                nodeAux = nodeAux.leftChild;
-            }
-            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
-            {
-                nodeAux = nodeAux.bottomChild;
-            }
-            else
-            {
-                end = true;
-            }
-        }
-
-        MonoBehaviour.print("Finalizei a distribuição de heuristicas");
-
-        Node auxRoad = null;
-
-        nodeAux = player[0];
-
-        List<Node> listNodes = new List<Node>();
-        
-        int l = 0;
-
-        while (!find)
-        {
-            if (nodeAux.upChild != null && !nodeAux.upChild.blocked && !nodeAux.upChild.accessed)
-            {
-                listNodes.Add(nodeAux.upChild);
-            }
-            if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && !nodeAux.bottomChild.accessed)
-            {
-                listNodes.Add(nodeAux.bottomChild);
-            }
-            if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && !nodeAux.leftChild.accessed)
-            {
-                listNodes.Add(nodeAux.leftChild);
-            }
-            if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed)
-            {
-                listNodes.Add(nodeAux.rightChild);
-            }
-
-            if (listNodes.Count == 0)
-            {
-                if (nodeAux.upChild != null && !nodeAux.upChild.blocked && nodeAux.upChild.accessed)
+                if (distance <= near)
                 {
-                    nodeAux.upChild.accessed = false;
-                }
-                if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && nodeAux.bottomChild.accessed)
-                {
-                    nodeAux.bottomChild.accessed = false;
-                }
-                if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && nodeAux.leftChild.accessed)
-                {
-                    nodeAux.leftChild.accessed = false;
-                }
-                if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && nodeAux.rightChild.accessed)
-                {
-                    nodeAux.rightChild.accessed = false;
-                }
-            }
-
-            listNodes.ForEach((node) =>
-            {
-                if (listNodes.FindIndex((obj) => { return obj.Equals(node); }) == 0)
-                {
-                    auxRoad = node;
-                }
-                else
-                {
-                    if (node.heuristic <= auxRoad.heuristic)
-                    {
-                        auxRoad = node;
-                    }
+                    trash = node;
+                    near = distance;
                 }
             });
 
-            if (auxRoad.Equals(trash))
+            if (trash == null)
             {
-                find = true;
+                return null;
             }
 
-            road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
-            auxRoad.accessed = true;
-            nodeAux = auxRoad;
-            listNodes.RemoveRange(0, listNodes.Count);
+            //Adicionando heuristicas
+            nodeAux = this.branchNode;
+            while (!end)
+            {
+                int valueNodeX = nodeAux.value.x;
+                int valueTrashX = trash.value.x;
+                int valueNodeY = nodeAux.value.y;
+                int valueTrashY = trash.value.y;
+                int distance;
+                int valueX, valueY;
 
-            if (l > 100)
-            {
-                break;
+                if (nodeAux.blocked)
+                {
+                    distance = int.MaxValue;
+                }
+                else
+                {
+
+                    if (valueNodeX < 0) valueNodeX *= -1;
+
+                    if (valueTrashX < 0) valueTrashX *= -1;
+
+                    valueX = valueNodeX - valueTrashX;
+
+                    if (valueX < 0) valueX *= -1;
+
+                    if (valueNodeY < 0) valueNodeY *= -1;
+
+                    if (valueTrashY < 0) valueTrashY *= -1;
+
+                    valueY = valueNodeY - valueTrashY;
+
+                    if (valueY < 0) valueY *= -1;
+
+                    distance = valueX + valueY;
+                }
+
+                if (!nodeAux.accessed)
+                {
+                    nodeAux.accessed = true;
+                    nodeAux.heuristic = distance;
+                }
+
+                if (nodeAux.upChild != null && !nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && !nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && !nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
             }
-            if(l>50)
+
+            //Limpando acesso aos Nós
+            nodeAux = this.branchNode;
+            end = false;
+            while (!end)
             {
-                MonoBehaviour.print("Up acessed: " + auxRoad.upChild.accessed + " Bottom acessed: " + auxRoad.bottomChild.accessed + " Right acessed: " + auxRoad.rightChild.accessed + " Left acessed: " + auxRoad.leftChild.accessed);
+                if (nodeAux.accessed)
+                {
+                    nodeAux.accessed = false;
+                }
+
+                if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
             }
-            l++;
+
+            MonoBehaviour.print("Finalizei a distribuição de heuristicas");
+
+            Node auxRoad = null;
+
+            nodeAux = player;
+
+            List<Node> listNodes = new List<Node>();
+
+            int l = 0;
+
+            //Criando rotas
+            while (!find)
+            {
+                if (nodeAux.upChild != null && !nodeAux.upChild.blocked && !nodeAux.upChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.upChild);
+                }
+                if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && !nodeAux.bottomChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.bottomChild);
+                }
+                if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && !nodeAux.leftChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.leftChild);
+                }
+                if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.rightChild);
+                }
+
+                if (listNodes.Count == 0)
+                {
+                    if (nodeAux.upChild != null && !nodeAux.upChild.blocked && nodeAux.upChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.upChild.accessed = false;
+                    }
+                    if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && nodeAux.bottomChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.bottomChild.accessed = false;
+                    }
+                    if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && nodeAux.leftChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.leftChild.accessed = false;
+                    }
+                    if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && nodeAux.rightChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.rightChild.accessed = false;
+                    }
+                }
+
+                listNodes.ForEach((node) =>
+                {
+                    if (listNodes.FindIndex((obj) => { return obj.Equals(node); }) == 0)
+                    {
+                        auxRoad = node;
+                    }
+                    else
+                    {
+                        if (node.heuristic <= auxRoad.heuristic)
+                        {
+                            auxRoad = node;
+                        }
+                    }
+                });
+
+                if (auxRoad.Equals(trash))
+                {
+                    find = true;
+                }
+
+                road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
+                auxRoad.accessed = true;
+                nodeAux = auxRoad;
+                listNodes.RemoveRange(0, listNodes.Count);
+
+                if (l > 100)
+                {
+                    break;
+                }
+                if (l > 50)
+                {
+                    MonoBehaviour.print("Up acessed: " + auxRoad.upChild.accessed + " Bottom acessed: " + auxRoad.bottomChild.accessed + " Right acessed: " + auxRoad.rightChild.accessed + " Left acessed: " + auxRoad.leftChild.accessed);
+                }
+                l++;
+            }
+
+            //Limpando acesso aos Nós
+            nodeAux = this.branchNode;
+            end = false;
+            while (!end)
+            {
+                if (nodeAux.accessed)
+                {
+                    nodeAux.accessed = false;
+                }
+
+                if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
+            }
         }
-
-        //Limpando acesso aos Nós
-        nodeAux = this.branchNode;
-        end = false;
-        while (!end)
+        else
         {
-            if (nodeAux.accessed)
+            Node nodeAux = this.branchNode;
+            List<Node> listNodes = new List<Node>();
+            int i = 0;
+
+            nodesTrash.ForEach((node) =>
             {
-                nodeAux.accessed = false;
+                int valueNodeX = node.value.x;
+                int valuePlayerX = player.value.x;
+                int valueNodeY = node.value.y;
+                int valuePlayerY = player.value.y;
+
+                if (valueNodeX < 0) valueNodeX *= -1;
+
+                if (valuePlayerX < 0) valuePlayerX *= -1;
+
+                int valueX = valueNodeX - valuePlayerX;
+
+                if (valueX < 0) valueX *= -1;
+
+                if (valueNodeY < 0) valueNodeY *= -1;
+
+                if (valuePlayerY < 0) valuePlayerY *= -1;
+
+                int valueY = valueNodeY - valuePlayerY;
+
+                if (valueY < 0) valueY *= -1;
+
+                int distance = valueX + valueY;
+
+                if (distance <= near)
+                {
+                    trash = node;
+                    near = distance;
+                }
+            });
+
+            if (trash == null)
+            {
+                return null;
             }
 
-            if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+            //Adicionando heuristicas
+            nodeAux = this.branchNode;
+            listNodes.Add(branchNode);
+
+            while (true)
             {
-                nodeAux = nodeAux.upChild;
+                int valueNodeX = nodeAux.value.x;
+                int valueTrashX = trash.value.x;
+                int valueNodeY = nodeAux.value.y;
+                int valueTrashY = trash.value.y;
+                int distance;
+                int valueX, valueY;
+
+                if (nodeAux.blocked)
+                {
+                    distance = int.MaxValue;
+                }
+                else
+                {
+
+                    if (valueNodeX < 0) valueNodeX *= -1;
+
+                    if (valueTrashX < 0) valueTrashX *= -1;
+
+                    valueX = valueNodeX - valueTrashX;
+
+                    if (valueX < 0) valueX *= -1;
+
+                    if (valueNodeY < 0) valueNodeY *= -1;
+
+                    if (valueTrashY < 0) valueTrashY *= -1;
+
+                    valueY = valueNodeY - valueTrashY;
+
+                    if (valueY < 0) valueY *= -1;
+
+                    distance = valueX + valueY;
+                }
+
+                if (!listNodes[i].accessed)
+                {
+                    listNodes[i].accessed = true;
+                    listNodes[i].heuristic = distance;
+                }
+
+                if (listNodes[i].upChild != null)
+                {
+                    if (!listNodes[i].upChild.accessed)
+                    {
+                        listNodes[i].upChild.accessed = true;
+                        listNodes[i].upChild.heuristic = distance;
+
+                        if (!listNodes.Contains(listNodes[i].upChild))
+                        {
+                            listNodes.Add(listNodes[i].upChild);
+                        }
+                    }
+                }
+                if (listNodes[i].bottomChild != null)
+                {
+                    if (!listNodes[i].bottomChild.accessed)
+                    {
+                        listNodes[i].bottomChild.accessed = true;
+                        listNodes[i].bottomChild.heuristic = distance;
+
+                        if (!listNodes.Contains(listNodes[i].bottomChild))
+                        {
+                            listNodes.Add(listNodes[i].bottomChild);
+                        }
+                    }
+                }
+                if (listNodes[i].leftChild != null)
+                {
+                    if (!listNodes[i].leftChild.accessed)
+                    {
+                        listNodes[i].leftChild.accessed = true;
+                        listNodes[i].leftChild.heuristic = distance;
+
+                        if (!listNodes.Contains(listNodes[i].leftChild))
+                        {
+                            listNodes.Add(listNodes[i].leftChild);
+                        }
+                    }
+                }
+                if (listNodes[i].rightChild != null)
+                {
+                    if (!listNodes[i].rightChild.accessed)
+                    {
+                        listNodes[i].rightChild.accessed = true;
+                        listNodes[i].rightChild.heuristic = distance;
+
+                        if (!listNodes.Contains(listNodes[i].rightChild))
+                        {
+                            listNodes.Add(listNodes[i].rightChild);
+                        }
+                    }
+                }
+                i++;
+
+                //Se por acaso o i tiver o tamanho da lista deve ser parado imediatamente o loop, para evitar erro de index
+                if (i >= listNodes.Count)
+                {
+                    break;
+                }
             }
-            else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+
+            //Limpando acesso aos Nós
+            foreach (Node node in listNodes)
             {
-                nodeAux = nodeAux.rightChild;
+                node.accessed = false;
             }
-            else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+
+            MonoBehaviour.print("Finalizei a distribuição de heuristicas");
+
+            Node auxRoad = null;
+
+            nodeAux = player;
+
+            listNodes = new List<Node>();
+
+            listNodes.Add(branchNode);
+
+            int l = 0;
+
+            //Criando rotas
+            while (!find)
             {
-                nodeAux = nodeAux.leftChild;
+                if (nodeAux.upChild != null && !nodeAux.upChild.blocked && !nodeAux.upChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.upChild);
+                }
+                if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && !nodeAux.bottomChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.bottomChild);
+                }
+                if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && !nodeAux.leftChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.leftChild);
+                }
+                if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && !nodeAux.rightChild.accessed && !nodeAux.upChild.npc)
+                {
+                    listNodes.Add(nodeAux.rightChild);
+                }
+
+                if (listNodes.Count == 0)
+                {
+                    if (nodeAux.upChild != null && !nodeAux.upChild.blocked && nodeAux.upChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.upChild.accessed = false;
+                    }
+                    if (nodeAux.bottomChild != null && !nodeAux.bottomChild.blocked && nodeAux.bottomChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.bottomChild.accessed = false;
+                    }
+                    if (nodeAux.leftChild != null && !nodeAux.leftChild.blocked && nodeAux.leftChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.leftChild.accessed = false;
+                    }
+                    if (nodeAux.rightChild != null && !nodeAux.rightChild.blocked && nodeAux.rightChild.accessed && !nodeAux.upChild.npc)
+                    {
+                        nodeAux.rightChild.accessed = false;
+                    }
+                }
+
+                listNodes.ForEach((node) =>
+                {
+                    if (listNodes.FindIndex((obj) => { return obj.Equals(node); }) == 0)
+                    {
+                        auxRoad = node;
+                    }
+                    else
+                    {
+                        if (node.heuristic <= auxRoad.heuristic)
+                        {
+                            auxRoad = node;
+                        }
+                    }
+                });
+
+                if (auxRoad.Equals(trash))
+                {
+                    find = true;
+                }
+
+                road.Add(new Vector3Int(auxRoad.value.x, auxRoad.value.y, 0));
+                auxRoad.accessed = true;
+                nodeAux = auxRoad;
+                listNodes.RemoveRange(0, listNodes.Count);
+
+                if (l > 100)
+                {
+                    break;
+                }
+                l++;
             }
-            else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+
+            //Limpando acesso aos Nós
+            nodeAux = this.branchNode;
+            end = false;
+            while (!end)
             {
-                nodeAux = nodeAux.bottomChild;
-            }
-            else
-            {
-                end = true;
+                if (nodeAux.accessed)
+                {
+                    nodeAux.accessed = false;
+                }
+
+                if (nodeAux.upChild != null && nodeAux.upChild.accessed)
+                {
+                    nodeAux = nodeAux.upChild;
+                }
+                else if (nodeAux.rightChild != null && nodeAux.rightChild.accessed)
+                {
+                    nodeAux = nodeAux.rightChild;
+                }
+                else if (nodeAux.leftChild != null && nodeAux.leftChild.accessed)
+                {
+                    nodeAux = nodeAux.leftChild;
+                }
+                else if (nodeAux.bottomChild != null && !nodeAux.Equals(this.branchNode))
+                {
+                    nodeAux = nodeAux.bottomChild;
+                }
+                else
+                {
+                    end = true;
+                }
             }
         }
 
